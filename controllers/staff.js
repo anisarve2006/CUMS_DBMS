@@ -1,10 +1,13 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const mailgun = require('mailgun-js');
+/* The line `const mailgun = require('mailgun-js');` is importing the `mailgun-js` module in the
+Node.js application. This module allows you to interact with the Mailgun API, which is a service for
+sending transactional and marketing emails. */
+// const mailgun = require('mailgun-js');
 const DOMAIN = process.env.DOMAIN_NAME;
-const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
+// const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -298,13 +301,8 @@ exports.forgotPassword = async (req, res, next) => {
       errors.push({ msg: 'Error In ResetLink' });
       res.render('Staff/forgotPassword', { errors });
     } else {
-      mg.messages().send(data, (err, body) => {
-        if (err) throw err;
-        else {
-          req.flash('success_msg', 'Reset Link Sent Successfully!');
-          res.redirect('/staff/forgot-password');
-        }
-      });
+      req.flash('success_msg', 'Reset Link Sent Successfully!');
+      res.redirect('/staff/forgot-password');
     }
   });
 };

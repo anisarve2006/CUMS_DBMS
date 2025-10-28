@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const env = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -30,13 +30,13 @@ const zeroParamPromise = (sql) => {
 const queryParamPromise = (sql, queryParam) => {
   return new Promise((resolve, reject) => {
     db.query(sql, queryParam, (err, results) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
       return resolve(results);
     });
   });
 };
+
+
 const relations = [
   'assignment_submission',
   'marks',
@@ -6472,27 +6472,27 @@ const reset = async () => {
     console.log('courses added');
     // 4.Add Staffs
     for (let i = 0; i < staffData.length; ++i) {
-      const currentStaff = staffData[i];
-      const dept_id = department_data[parseInt(i / 15)].dept_id;
-      const gender = i % 2 === 0 ? 'Male' : 'Female';
-      const hashedPassword = await bcrypt.hash(currentStaff.dob, 8);
-      await queryParamPromise('insert into staff set ?', {
-        st_id: uuidv4(),
-        st_name: currentStaff.st_name,
-        gender,
-        dob: currentStaff.dob,
-        email: currentStaff.email,
-        st_address:
-          currentStaff.st_address +
-          '-' +
-          currentStaff.city +
-          '-' +
-          currentStaff.zip,
-        contact: currentStaff.contact.split(' ')[0],
-        dept_id,
-        password: hashedPassword,
-      });
-    }
+  try {
+    const currentStaff = staffData[i];
+    const dept_id = department_data[parseInt(i / 15)].dept_id;
+    const gender = i % 2 === 0 ? 'Male' : 'Female';
+    const hashedPassword = await bcrypt.hash(currentStaff.dob, 8);
+    await queryParamPromise('insert into staff set ?', {
+      st_id: uuidv4(),
+      st_name: currentStaff.st_name,
+      gender,
+      dob: currentStaff.dob,
+      email: currentStaff.email,
+      st_address: `${currentStaff.st_address}-${currentStaff.city}-${currentStaff.zip}`,
+      contact: currentStaff.contact.split(' ')[0],
+      dept_id,
+      password: hashedPassword,
+    });
+  } catch (err) {
+    console.error('Staff insert error at index', i, ':', err.message);
+  }
+}
+
     console.log('staffs added');
 
     // 5.Add Students

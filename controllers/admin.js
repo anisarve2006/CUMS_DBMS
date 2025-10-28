@@ -1,10 +1,10 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid').v4;
-const mailgun = require('mailgun-js');
+// const mailgun = require('mailgun-js');
 const DOMAIN = process.env.DOMAIN_NAME;
-const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
+// const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -187,13 +187,9 @@ exports.forgotPassword = async (req, res, next) => {
       errors.push({ msg: 'Error In ResetLink' });
       res.render('Admin/forgotPassword', { errors });
     } else {
-      mg.messages().send(data, (err, body) => {
-        if (err) throw err;
-        else {
-          req.flash('success_msg', 'Reset Link Sent Successfully!');
-          res.redirect('/admin/forgot-password');
-        }
-      });
+      console.log(data);
+      req.flash('success_msg', 'Reset Link Sent Successfully!');
+      res.redirect('/admin/forgot-password');
     }
   });
 };

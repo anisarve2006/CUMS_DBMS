@@ -23,7 +23,7 @@ app.set('views', 'views');
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "asdfghk",
     resave: true,
     saveUninitialized: true,
   })
